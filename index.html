@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+  <script type="text/javascript" src="clean.js"></script>
+  <script type="text/javascript" src="iron.js"></script>
+  <script type="text/javascript" src="mend.js"></script>
+  <script type="text/javascript" src="do-batch.js"></script>
+
+  <style type="text/css">
+    section {
+      margin: 2em 0;
+      padding: 0 2em 2em;
+      border: 1px double #bab9b9;
+      width: 600px;
+    }
+    pre {
+      padding: 1em;
+      background-color: #f1f1f1;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Uh oh! There is an error in your javascript. Please open your developer console to view the full error message.</h1>
+
+<script type="text/javascript">
+
+  document.body.innerHTML = [
+    {heading: "dirty_clothes", input: window.dirty_clothes, function_name: "clean"},
+    {heading: "wrinkled_clothes", input: window.wrinkled_clothes, function_name: "iron"},
+    {heading: "torn_clothes", input: window.torn_clothes, function_name: "mend"},
+    {heading: "batch_input", input: window.batch_input, function_name: "doBatch"}
+  ].map(function(challenge){
+    var currentFunction = function(arg){
+      return JSON.stringify( window[challenge.function_name](arg) );
+    };
+    var liEls = challenge.input.map(function(input){
+      var sInput = JSON.stringify(input);
+      return `<tr>
+                <td><button>${challenge.function_name}(${sInput})</button></td>
+                <td><span>${ currentFunction(sInput) }</span></td>
+              </tr>`;
+    }).join("")
+    return `
+      <section>
+        <h2>${challenge.heading}</h2>
+        <table>
+          ${liEls}
+        </table>
+        <pre>${window[challenge.function_name]}</pre>
+      </section>
+    `;
+  }).join("")
+
+  document.querySelector("body").onclick = function(e){
+    if(e.target.tagName !== "BUTTON") { return; }
+    e.target.parentElement.parentElement.querySelector("span").innerText = JSON.stringify( eval(e.target.innerText) );
+  }
+
+
+</script>
+</body>
+</html>
